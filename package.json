@@ -1,0 +1,16 @@
+{
+  "name": "Location tracker",
+  "version": "0.0.1",
+  "author": "Jules Chamberlain",
+  "description": "Location tracking system",
+  "dependencies": {
+    "express": "~4.16.0",
+    "socket.io": "^1.7.3",
+    "node-static": "latest",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
