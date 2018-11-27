@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Example of Getting Current Position</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script> var username = prompt('What\'s your username?'); </script>
+<script type="text/javascript">
+socket = io.connect('/');
+socket.emit('add user', username);
+
+function sendmessage() {
+    var new_message = document.getElementById("new_message").value;
+    //alert (new_message);
+    socket.emit('new_message', new_message);
+}
+
+socket.on('new_message', function (data) {
+    //socket.broadcast.emit('new_message', data);
+    //console.log(data);
+    alert(data);
+	});
+      
+</script>
+</head>
+<body>
+    <button type="button" onclick="sendmessage()">Send message</button><BR><BR>
+	<input name="new_message" type="text" id="new_message" value=""><BR>
+
+  
+</body>
+</html>         

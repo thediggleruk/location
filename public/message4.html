@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Example of Getting Current Position</title>
+<script src="https://maps.google.com/maps/api/js?key=AIzaSyAjz91dAIPVHJWYkdXTUY8Kvrcwh1P3soA&sensor=false" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script> var username = prompt('What\'s your username?'); </script>
+<script type="text/javascript">
+socket = io.connect('/');
+socket.emit('add user', username);
+
+function sendcoords() {
+    var new_message = document.getElementById("new_message").value;
+    var new_lat = document.getElementById("new_lat").value;
+    var new_lng = document.getElementById("new_lng").value;
+    var Details={  
+    username : username,  
+    message : new_message,
+    new_lat : new_lat,
+    new_lng : new_lng  
+    }; 
+
+    socket.emit('new_coords', Details);
+}
+ 
+socket.on('update_coords', function (data) {
+    //socket.broadcast.emit('new_message', data);
+    //console.log(data);
+    alert(data.username+" just sent "+data.lat);
+	});
+
+
+</script>
+</head>
+<body>
+    <button type="button" onclick="sendcoords()">Send message</button><BR><BR>
+    <input name="new_message" type="text" id="new_message" value=""><BR>
+        <input name="new_lat" type="text" id="new_lat" value="52.414489581550235"><BR>
+            <input name="new_lng" type="text" id="new_lng" value="-1.557733308828292"><BR>
+
+  
+</body>
+</html>         

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+    <title>Map Viewer</title>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/tracker.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjz91dAIPVHJWYkdXTUY8Kvrcwh1P3soA&callback=initMap" async defer></script>
+  </body>
+</html>

@@ -1,0 +1,105 @@
+<html>
+<head>
+    <title>Leaflet Realtime</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+<style>
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+<script> var username = prompt('What\'s your username?'); </script>
+
+<script>
+var tinyIcon = L.Icon.extend({
+		options: {
+			shadowUrl: '../assets/marker-shadow.png',
+			iconSize: [25, 39],
+			iconAnchor:   [12, 36],
+			shadowSize: [41, 41],
+			shadowAnchor: [12, 38],
+			popupAnchor: [0, -30]
+		}
+	});
+	var redIcon = new tinyIcon({ iconUrl: '../assets/marker-red.png' });
+    var yellowIcon = new tinyIcon({ iconUrl: '../assets/marker-yellow.png' });
+    
+socket = io.connect('/');
+socket.emit('add user', username);
+
+socket.on('remove_marker', function (data) {
+map.removeLayer(marker);
+// alert("marker removed");
+});
+
+socket.on('updatecoords', function (data) {
+ var newuser = data.username;
+var newlat = data.lat;
+var newlng = data.lng;
+marker= L.marker([newlat,newlng]).addTo(map); 
+//marker = new L.Marker(e.latlng, { icon: redIcon }).addTo(map);
+//alert(newlat);
+});
+
+
+function initializeMapAndLocator(){
+
+// Init Map//
+map = L.map('map');
+//Window.map = new L.Map('map');
+var zoom = 20;
+var theMarker = {};
+
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+          maxZoom: 20,
+      maxNativeZoom: 20,
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    id: 'mapbox.streets'
+}).addTo(map);
+
+
+		              map.locate({setView: true,
+                       maxZoom:20, 
+                       watch:true
+                      });
+		   
+
+function onLocationFound(e) {
+
+	var test = e.latlng;
+	const new_lat = test.lat;
+	const new_lng = test.lng;
+	var new_message = "On the move";
+
+    var Details={  
+    username : username,  
+    message : new_message,
+    new_lat : new_lat,
+    new_lng : new_lng  
+    }; 
+
+    socket.emit('new_coords', Details); 
+}
+
+
+
+map.on('locationfound', onLocationFound);
+
+}
+
+
+initializeMapAndLocator();
+	</script>
+</body>
+</html>

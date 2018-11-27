@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>1 Geo</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+	<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script> var username = prompt('What\'s your username?'); </script>
+<script>
+        var tinyIcon = L.Icon.extend({
+		options: {
+			shadowUrl: '../assets/marker-shadow.png',
+			iconSize: [25, 39],
+			iconAnchor:   [12, 36],
+			shadowSize: [41, 41],
+			shadowAnchor: [12, 38],
+			popupAnchor: [0, -30]
+		}
+	});
+	
+var redIcon = new tinyIcon({ iconUrl: '../assets/marker-red.png' });
+var yellowIcon = new tinyIcon({ iconUrl: '../assets/marker-yellow.png' });
+socket = io.connect('/');
+socket.emit('add user', username);
+</script>
+	<style>body { padding: 0; margin: 0; } html, body, #map { height: 100vh; width: 100vw; }</style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<script>
+
+        function initializeMapAndLocator() {
+
+           var map = L.map('map');
+
+           googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+             maxZoom: 18,
+             subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+           }).addTo(map);
+
+			map.locate({setView: true,
+                       maxZoom:20
+                      });
+          
+           var marker;
+           var circles;
+
+
+           function onLocationFound(e) {
+             var radius = e.accuracy / 2;
+			map.locate({
+             setView: false,
+             timeout: 60000,
+             enableHighAccuracy: true
+           });
+		   
+		   // send new coords here
+		 	var newlatlng = e.latlng;
+			const new_lat = newlatlng.lat;
+			const new_lng = newlatlng.lng;
+		   
+		        var Details={  
+					username : username,  
+					active : true,
+					new_lat : new_lat,
+					new_lng : new_lng,
+					update : true  
+						}; 
+
+    socket.emit('new_coords', Details);
+	var usermarker;
+             if (map.hasLayer(usermarker)) {
+      
+               map.removeLayer(usermarker);
+             }
+
+             usermarker = new L.Marker(e.latlng, {
+               icon: yellowIcon,
+               draggable: true
+             });
+
+           
+
+             map.addLayer(usermarker);
+             usermarker.bindPopup('<p>You are here ' + username + '</p>').openPopup();
+         
+           }
+
+           map.on('locationfound', onLocationFound);
+
+
+    socket.on('updatecoords', function (data) {
+        for (var i = 0; i < data.length; i++) {
+            var marker = new L.marker([data[i].lat, data[i].lng], { draggable: true, icon: redIcon }).addTo(map);
+            marker.bindPopup('<p>This cunt is here ' + data[i].username + '</p>').openPopup();
+
+            //map.addLayer(marker);
+        }
+//alert(data[0].lat);
+});
+
+         }
+
+         initializeMapAndLocator();
+         
+
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Example of Getting Current Position</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script> var username = prompt('What\'s your username?'); </script>
+<script>
+socket = io.connect('/');
+socket.emit('add user', username);
+</script>
+<script type="text/javascript">
+
+    // Set global variable
+    var watchID;
+    function showPosition(){
+        if(navigator.geolocation){
+            watchID = navigator.geolocation.watchPosition(successCallback);
+        } else{
+            alert("Sorry, your browser does not support HTML5 geolocation.");
+        }
+    }
+    function successCallback(position){
+        toggleWatchBtn.innerHTML = "Stop Watching";
+        
+        // Check position has been changed or not before doing anything
+        if(prevLat != position.coords.latitude || prevLong != position.coords.longitude){
+            //alert("FUCKER MOVED");
+			document.getElementById('lat').value = position.coords.latitude;
+			document.getElementById('lng').value = position.coords.longitude;
+	
+    var new_lat = document.getElementById("lat").value;
+    var new_lng = document.getElementById("lng").value;
+	var new_message = "Moving icon";
+
+    var Details={  
+    username : username,  
+    message : new_message,
+    new_lat : new_lat,
+    new_lng : new_lng  
+    }; 
+
+    socket.emit('new_coords', Details);
+
+
+
+}
+		
+			
+			
+            // Set previous location
+            var prevLat = position.coords.latitude;
+            var prevLong = position.coords.longitude;
+            
+            // Get current position
+            var positionInfo = "Your current position is (" + "Latitude: " + position.coords.latitude + ", " + "Longitude: " + position.coords.longitude + ")";
+            document.getElementById("result").innerHTML = positionInfo;
+            
+        }
+
+    function startWatch(){
+ 
+        var result = document.getElementById("result");
+        
+        var toggleWatchBtn = document.getElementById("toggleWatchBtn");
+        
+        toggleWatchBtn.onclick = function(){
+            if(watchID){
+                toggleWatchBtn.innerHTML = "Start Watching";
+                navigator.geolocation.clearWatch(watchID);
+                watchID = false;
+            }
+            else{
+                toggleWatchBtn.innerHTML = "Aquiring Geo Location...";
+                showPosition();
+            }
+        }
+    }
+    
+    // Initialise the whole system (above)
+    window.onload = startWatch;
+</script>
+</head>
+<body>
+    <button type="button" id="toggleWatchBtn">Start Watching</button><BR><BR>
+	<input name="lat" type="text" id="lat" value=""><BR>
+<input name="lng" type="text" id="lng" value=""><BR><BR>
+    <div id="result">
+        <!--Position information will be inserted here-->
+    </div>   
+</body>
+</html>                            
