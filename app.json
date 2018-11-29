@@ -1,16 +1,16 @@
 {
   "name": "location",
-  "description": "my",
+  "subdomain": "geotest",
+  "author": "Jules",
   "scripts": {
+    "start": "server.js"
   },
-  "env": {
+  "version": "0.0.3-1",
+  "engines": {
+    "node": ">= 0.8.x"
   },
-  "formation": {
-  },
-  "addons": [
-
-  ],
-  "buildpacks": [
-
-  ]
+  "dependencies": {
+    "socket.io": "latest",
+    "node-static": "latest"
+  }
 }
